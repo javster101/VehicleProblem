@@ -19,4 +19,12 @@ public class House {
         this.street = street;
         this.house = house;
     }
+    
+    public boolean equals(Object o) {
+        if (!(o instanceof House))
+            return false;
+        House h = (House) o;
+        return h.avenue == this.avenue && h.street == this.street && (h.house.length() > 1 ? h.house : h.house + h.house).equals((house.length() > 1 ? house : house + house));
+            
+    }
 }

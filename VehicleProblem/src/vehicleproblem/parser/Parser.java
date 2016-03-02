@@ -29,6 +29,9 @@ public class Parser {
             res.houses.add(new House(Integer.parseInt(sp[1]),Integer.parseInt(sp[0]), sp[2]));
             data = br.readLine();
         }
+        res.bartComplex = Integer.parseInt(br.readLine());
+        br.readLine();
+        res.lisaComplex = Integer.parseInt(br.readLine());
         return res;
     }
 }
