@@ -5,6 +5,8 @@
  */
 package vehicleproblem.parser;
 
+import com.opengg.core.Vector2f;
+
 /**
  *
  * @author 19make
@@ -13,6 +15,8 @@ public class House {
     public int avenue;
     public int street;
     public String house;
+    
+    
     
     public House(int avenue, int street, String house) {
         this.avenue = avenue;
@@ -27,4 +31,9 @@ public class House {
         return h.avenue == this.avenue && h.street == this.street && (h.house.length() > 1 ? h.house : h.house + h.house).equals((house.length() > 1 ? house : house + house));
             
     }
+    
+    public Vector2f getWorldPos(){
+        return new Vector2f(avenue,street);
+    }
+        
 }
