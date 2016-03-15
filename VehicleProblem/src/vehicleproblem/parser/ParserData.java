@@ -15,5 +15,5 @@ public class ParserData {
     public int cycleNumber;
     public int bartComplex;
     public int lisaComplex; 
-    public ArrayList<House> houses = new ArrayList<>();
+    public ArrayList<Vector2f> houses = new ArrayList<>();
 }
