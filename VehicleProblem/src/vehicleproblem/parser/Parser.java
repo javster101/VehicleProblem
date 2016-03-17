@@ -26,7 +26,7 @@ public class Parser {
         while (data.equals("Bart Complex"))
         {
             String[] sp = data.split(",");
-            res.houses.add(new Vector2f((Integer.parseInt(sp[0])-1) * 2) + 1, (Integer.parseInt(sp[1]) - 1) * 10 + ());
+            res.houses.add(new Vector2f((Integer.parseInt(sp[0])-1) * 2) + 1, (Integer.parseInt(sp[1]) - 1) * 10 + (sp[2].charAt(0) - 'A') + 1);
             data = br.readLine();
         }
         res.bartComplex = Integer.parseInt(br.readLine());
