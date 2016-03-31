@@ -5,11 +5,15 @@
  */
 package vehicleproblem.algorithm;
 
+import com.opengg.core.Vector2f;
+import static com.opengg.core.util.GlobalUtil.print;
 import static com.opengg.core.util.GlobalUtil.print;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 /**
@@ -52,6 +56,7 @@ public class AStar {
     public static void setBlocked(int i, int j) {
         
         grid[i][j] = null;
+        
     }
 
     public static void setStartCell(int i, int j) {
@@ -94,7 +99,8 @@ public class AStar {
             }
             closed[current.i][current.j] = true;
 
-            if (current.equals(grid[endI][endJ])) {
+            if (current.equals(grid[endI]
+                    [endJ])) {
                 return;
             }
 
@@ -141,7 +147,7 @@ public class AStar {
         }
     }
 
-    public static void test(int tCase, int x, int y, int si, int sj, int ei, int ej, int[][] blocked) {
+    public static List test(int tCase, int x, int y, int si, int sj, int ei, int ej, int[][] blocked) {
         System.out.println("\n\nTest Case #" + tCase);
         //Reset
         grid = new Cell[x][y];
@@ -167,60 +173,34 @@ public class AStar {
             }
 
         }
-        grid[si][sj].finalCost = 0;
+        grid[si]
+                [sj]
+                .finalCost = 0;
         for (int i = 0; i < blocked.length; ++i) {
             setBlocked(blocked[i][0], blocked[i][1]);
         }
-        System.out.println("Grid: ");
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
-                if (i == si && j == sj) {
-                    System.out.print("SO  "); //Source
-                } else if (i == ei && j == ej) {
-                    System.out.print("DE  ");  //Destination
-                } else if (grid[i][j] != null) {
-                    System.out.printf("%-3d ", 0);
-                } else {
-                    System.out.print("BL  ");
-                }
-            }
-            System.out.println();
-        }
-        System.out.println();
+
 
         AStar();
-        System.out.println("\nScores for cells: ");
-        for (int i = 0; i < x; i++) {
-            for (int j = 0; j < y; j++) {
-                if (grid[i][j] != null) {
-                    System.out.printf("%-3d ", grid[i][j].finalCost);
-                } else {
-                    System.out.print("BL  ");
-                }
-            }
-            System.out.println();
-        }
-        System.out.println();
 
+        List<Vector2f> s = new LinkedList<>();
         if (closed[endI][endJ]) {
             //Trace back the path 
-            System.out.println("Path: ");
+            //System.out.println("Path: ");
             Cell current = grid[endI][endJ];
-            System.out.print(current);
+            //System.out.print(current);
             while (current.parent != null) {
-                System.out.print(" -> " + current.parent);
+                s.add(new Vector2f(current.j, current.i));
                 current = current.parent;
             }
-            System.out.println();
+            //System.out.println();
         } else {
-            System.out.println("No possible path");
+            //System.out.println("No possible path");
         }
+        return s;
     }
 
     public static void main(String[] args) throws Exception {
-        /*test(1, 5, 5, 0, 0, 3, 2, new int[][]{{0,4},{2,2},{3,1},{3,3}}); 
-         test(2, 5, 5, 0, 0, 4, 4, new int[][]{{0,4},{2,2},{3,1},{3,3}});   
-         test(3, 7, 7, 2, 1, 5, 4, new int[][]{{4,1},{4,3},{5,3},{2,3}});*/
         EuclideanVertex[] vertices;
 
         ArrayList<EuclideanVertex> vlist = new ArrayList<>();
@@ -244,8 +224,7 @@ public class AStar {
         for (int i = 0; i < vlist.size(); i++) {
             vertices[i] = vlist.get(i);
         }
-       
-
+        
         Graph g = new Graph(vertices);
         
         SimulatedAnnealing sim = new SimulatedAnnealing(2000000, 1, 0.995);

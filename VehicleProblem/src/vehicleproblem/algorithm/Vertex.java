@@ -9,7 +9,7 @@ package vehicleproblem.algorithm;
  *
  * @author Warren
  */
-class Vertex {
+public class Vertex {
      private int id;
 
     public Vertex()

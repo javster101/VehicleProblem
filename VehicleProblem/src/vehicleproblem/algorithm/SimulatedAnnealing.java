@@ -11,7 +11,7 @@ import java.util.Random;
  *
  * @author Warren
  */
-class SimulatedAnnealing {
+public class SimulatedAnnealing {
     
     private int maxIter;
     private int reheat;

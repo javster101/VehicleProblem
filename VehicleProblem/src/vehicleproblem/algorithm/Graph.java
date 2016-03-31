@@ -14,7 +14,7 @@ import java.util.Random;
  *
  * @author Warren
  */
-class Graph {
+public class Graph {
      private int numVertices;
     private double[][] adjMat;
     private Random rand;

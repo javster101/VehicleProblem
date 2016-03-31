@@ -14,7 +14,7 @@ import java.util.LinkedList;
  *
  * @author Warren
  */
-class Tour {
+public class Tour {
     private double length;
     private Edge[] touredges;
     private Vertex[] vertices;
@@ -154,7 +154,7 @@ class Tour {
     }
 
     // returns a vertex list of length n where n is number of valid vertices in tour so far
-    Vertex[] verticesSoFar()
+    public Vertex[] verticesSoFar()
     {
         Vertex[] soFar = new Vertex[currpos];
          System.arraycopy(vertices, 0, soFar, 0, currpos);

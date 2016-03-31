@@ -25,12 +25,13 @@ public class Parser {
         res.cycleNumber = Integer.parseInt(br.readLine());
         br.readLine();
         String data = br.readLine();
-        while (data.equals("Bart Complex"))
+        while (!data.equals("Bart Complex"))
         {
             String[] sp = data.split(",");
-            Vector2f v =new Vector2f((Integer.parseInt(sp[0])-1) * 2 + 1, (Integer.parseInt(sp[1]) - 1) * 10 + (sp[2].charAt(0) - 'A') + 1);
+            Vector2f v =new Vector2f((Integer.parseInt(sp[0].replace("s", ""))-1) * 3, ((Integer.parseInt(sp[1].replace("a", "")) - 1) * 11) + (sp[2].charAt(0) - 'A'));
+            System.out.println(v.x + " " + v.y);
             res.houses.add(v);
-            res.tree.add(v);
+            //res.tree.add(v);
             data = br.readLine();
         }
         res.bartComplex = Integer.parseInt(br.readLine());

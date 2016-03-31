@@ -9,7 +9,7 @@ package vehicleproblem.algorithm;
  *
  * @author Warren
  */
-class EuclideanVertex extends Vertex{
+public class EuclideanVertex extends Vertex{
      private int[] coords;
     private int dim;
 
