@@ -148,7 +148,7 @@ public class AStar {
     }
 
     public static List test(int tCase, int x, int y, int si, int sj, int ei, int ej, int[][] blocked) {
-        System.out.println("\n\nTest Case #" + tCase);
+        //System.out.println("\n\nTest Case #" + tCase);
         //Reset
         grid = new Cell[x][y];
         closed = new boolean[x][y];

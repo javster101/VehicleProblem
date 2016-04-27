@@ -5,6 +5,8 @@
  */
 package vehicleproblem.algorithm;
 
+import com.opengg.core.Vector2f;
+
 /**
  *
  * @author Warren
@@ -21,7 +23,15 @@ public class DataPoint {
         this.mObjName = name;
         this.mCluster = null;
     }
-
+    
+    public static DataPoint toDataPoint(Vector2f v, String name){
+        return new DataPoint(v.x,v.y,name);
+    }
+    
+    public Vector2f toVector2f(){
+        return new Vector2f((float)this.mX, (float)this.mY);
+    }
+    
     public void setCluster(Cluster cluster) {
         this.mCluster = cluster;
         calcEuclideanDistance();

@@ -27,22 +27,19 @@ import com.opengg.core.render.window.GLFWWindow;
 import static com.opengg.core.render.window.RenderUtil.endFrame;
 import static com.opengg.core.render.window.RenderUtil.startFrame;
 import com.opengg.core.util.GlobalInfo;
-import static com.opengg.core.util.GlobalUtil.print;
 import com.opengg.core.world.Camera;
 import com.opengg.core.world.Terrain;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL32.GL_TEXTURE_CUBE_MAP_SEAMLESS;
 import static vehicleproblem.algorithm.AStar.test;
+import vehicleproblem.algorithm.DataPoint;
 import vehicleproblem.algorithm.EuclideanVertex;
 import vehicleproblem.algorithm.Graph;
 import vehicleproblem.algorithm.SimulatedAnnealing;
@@ -72,6 +69,8 @@ public class VehicleProblem implements KeyboardListener{
     int mode1, mode2;
     int rdistx = 1000/20;
     int rdisty = 1000/100;
+    float simspeed = 1;
+    ArrayList<Truck> routes = new ArrayList<>();
     /**
      * @param args the command line arguments
      */
@@ -104,7 +103,34 @@ public class VehicleProblem implements KeyboardListener{
     }
     
     public void setup() throws Exception{
-        genPath();
+        ParserData data = new ParserData();
+        try {
+            float total = 0;
+            data = Parser.parseFile("C:\\cycle data\\minicycle.txt");
+            int cyc = 0;
+            for(ArrayList<DataPoint> sdiv : data.groups){
+
+                cyc++;
+                if(cyc > 3){
+                    total+= 15000;
+                }
+                System.out.println();
+                ArrayList<Vector2f> finlst = new ArrayList<>();
+                
+                for(DataPoint p : sdiv){
+                    finlst.add(p.toVector2f());
+                }
+                total += genPath(finlst, 2000000);
+                
+            }
+            System.out.println(total);
+            
+            int i = 1;
+            
+        } catch (IOException ex) {
+            System.out.println("Could not find file!");
+        }
+        
         MovementLoader.setup(w.getID(), 20);
 
         vao = new VertexArrayObject();
@@ -138,6 +164,10 @@ public class VehicleProblem implements KeyboardListener{
 
         groundmod.removeBuffer();
         
+        for(Truck t:routes){
+            t.d = new DrawnObjectGroup(VehicleProblem.class.getResource("res/obj/faun_stw.obj"),1f);
+        }
+        
         enable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -165,6 +195,8 @@ public class VehicleProblem implements KeyboardListener{
         s.setUVMultX(50);
         s.setUVMultY(250);
         basehome = Matrix4f.translate(2.75f,0,1.6f).multiply(Matrix4f.scale(0.4f, 0.4f, 0.4f)).multiply(Matrix4f.rotate(90, 0, 1, 0));
+        routes.get(0).update();
+        
     }
     
     
@@ -174,7 +206,7 @@ public class VehicleProblem implements KeyboardListener{
         s.setUVMultX(50);
         s.setUVMultY(250);
         house.setMatrix(basehome);
-        enable(GL_CULL_FACE);
+        //enable(GL_CULL_FACE);
         rot = new Vector3f(-yrot, -xrot, 0);
         pos = MovementLoader.processMovement(pos, rot);
         c.setPos(pos);
@@ -186,9 +218,12 @@ public class VehicleProblem implements KeyboardListener{
         s.setUVMultX(1);
         s.setUVMultY(1);
         s.setMode(Mode.OBJECT_NO_SHADOW);
-        //testawp.draw();
-        //s.setMode(Mode.GUI);
+        for(Truck t : routes){
+            t.render();
+        }
+        s.setMode(Mode.GUI);
         drawLocalHomes(new Vector2f(-pos.z/20, -pos.x/4), 40);
+        
         renderfinal.endTexRender();
         renderfinal.useTexture(0);
         renderfinal.useDepthTexture(1);
@@ -217,6 +252,10 @@ public class VehicleProblem implements KeyboardListener{
     public void update(){
         xrot += rot1 * 5;
         yrot += rot2 * 5;
+        for(Truck t : routes){
+            t.update();
+            t.mult = simspeed;
+        }
     }
     
     public void exit(){
@@ -224,32 +263,24 @@ public class VehicleProblem implements KeyboardListener{
         vbo.delete();
     }
     
-    public void genPath(){
-        
-        
+    public float genPath(List<Vector2f> vss, int annealRate) throws IOException{
         EuclideanVertex[] vertices;
-        ParserData data = new ParserData();
-        try {
-             data = Parser.parseFile("C:\\minicycle.txt");
-        } catch (IOException ex) {
-            
-        }
-        
         ArrayList<EuclideanVertex> vlist = new ArrayList<>();
+        int ln = vss.size();
         int i2 = 0;
-        for(Vector2f v : data.houses){
+        for(Vector2f v : vss){
             int[] co = { (int)v.y, (int)v.x};
             vlist.add(new EuclideanVertex(i2, co ));
             i2++;
         }
-        
+        vss = null;
         vertices = new EuclideanVertex[vlist.size()];
         for (int i = 0; i < vlist.size(); i++) {
             vertices[i] = vlist.get(i);
         }
         Graph g = new Graph(vertices);
         
-        SimulatedAnnealing sim = new SimulatedAnnealing(2000000, 1, 0.995);
+        SimulatedAnnealing sim = new SimulatedAnnealing(annealRate, 1, 0.995);
         Tour t = sim.findShortestPath(g);
         EuclideanVertex[] graphvertices = g.getVertices();
         ArrayList<EuclideanVertex> temp = new ArrayList<>();
@@ -280,7 +311,7 @@ public class VehicleProblem implements KeyboardListener{
         for (int i = 0; i < bar.length; i++) {
             bar[i] = barriers.get(i);
         }
-        List<Vector2f> tottest = new LinkedList<>();
+        ArrayList<Vector2f>tottest = new ArrayList<>();
         for(int i = 0;i<temp.size();i++){
 
             EuclideanVertex badname = temp.get(i);
@@ -291,7 +322,7 @@ public class VehicleProblem implements KeyboardListener{
             }else{
                jesus = temp.get(i+1);
             }
-            //print(jesus.toString());             
+            
             List<Vector2f> temps = test(
                     i, 
                     width, 
@@ -301,16 +332,29 @@ public class VehicleProblem implements KeyboardListener{
                     jesus.getCoord(0), 
                     jesus.getCoord(1), 
                     bar);
-
-            tottest.addAll(temps);
+            tottest.add(new Vector2f(1000,1000));
+            for(int i4 = temps.size()-1; i4 >= 0; i4--){
+                tottest.add(temps.get(i4));
+            }
         }
-        System.out.println("Time in minutes: " + (tottest.size() * 3f/60f + data.houses.size()));
+        float time = (tottest.size() * 3f/60f + ln/2);
+        System.out.println("Time in minutes: " + time);
+        float miles = tottest.size() * 100f / 5000f;
         
+        routes.add(new Truck(tottest));
+        float empcost = 30*((time)/60); 
+        empcost+= 15*(((time)/60)-8);
+        return (((int)(5*(miles))) + ((int)((miles))/100)+empcost);
     }
     
     @Override
     public void keyPressed(int key) {
-
+        if (key == GLFW_KEY_RIGHT){
+            simspeed *= 2;
+        }
+        if (key == GLFW_KEY_LEFT){
+            simspeed /= 2;
+        }
         if (key == GLFW_KEY_Q) {
             rot1 += 0.3;
 

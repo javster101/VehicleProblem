@@ -76,10 +76,9 @@ public class KMeans {
                             tempCluster = clusters[l];
                             matchFoundFlag = true;
                         }
-                        //if statement - Check whether the Last EuDt is > Present EuDt
+                        
                     }
-//for variable 'l' - Looping between different Clusters for matching a Data Point.
-//add DataPoint to the cluster and calcSWCSS
+
                     if (matchFoundFlag) {
                         tempCluster.addDataPoint(cluster1.getDataPoint(k));
                         cluster1.removeDataPoint(cluster1.getDataPoint(k));
@@ -92,9 +91,9 @@ public class KMeans {
                     }
 //if statement - A Data Point is eligible for transfer between Clusters.
                 }
-                //for variable 'k' - Looping through all Data Points of the current Cluster.
-            } //for variable 'j' - Looping through all the Clusters.
-        }//for variable 'i' - Number of iterations.
+                
+            }
+        }
     }
 
     public ArrayList<ArrayList<DataPoint>> getClusterOutput() {
